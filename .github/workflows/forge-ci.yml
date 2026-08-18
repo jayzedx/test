@@ -25,5 +25,32 @@ jobs:
             cargo fmt --check
             cargo test
           else
-            echo "No package.json or Cargo.toml found. Add project-specific checks to .github/workflows/forge-ci.yml."
+            if [ ! -f article.txt ]; then
+              echo "Expected article.txt for this plain-text repository."
+              exit 1
+            fi
+
+            line_count="$(awk 'END { print NR + 0 }' article.txt)"
+            case "$line_count" in
+              1) ;;
+              *)
+                echo "article.txt must contain exactly one line; found $line_count."
+                exit 1
+                ;;
+            esac
+
+            if ! grep -Eq '[^[:space:]]' article.txt; then
+              echo "article.txt must not be empty."
+              exit 1
+            fi
+
+            if ! grep -Fqi 'Pikachu' article.txt; then
+              echo "article.txt must contain Pikachu-focused content."
+              exit 1
+            fi
+
+            if ! grep -Fqi 'Pokémon' article.txt; then
+              echo "article.txt must identify Pikachu as Pokémon content."
+              exit 1
+            fi
           fi
