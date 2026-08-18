@@ -1,0 +1,29 @@
+name: Forge CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  forge-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run project checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f package.json ]; then
+            corepack enable
+            pnpm install --frozen-lockfile
+            pnpm lint
+            pnpm test
+            pnpm build
+          elif [ -f Cargo.toml ]; then
+            cargo fmt --check
+            cargo test
+          else
+            echo "No package.json or Cargo.toml found. Add project-specific checks to .github/workflows/forge-ci.yml."
+          fi
