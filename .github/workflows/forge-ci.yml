@@ -1,0 +1,51 @@
+name: Forge CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  forge-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run project checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f package.json ]; then
+            corepack enable
+            pnpm install --frozen-lockfile
+            pnpm lint
+            pnpm test
+            pnpm build
+          elif [ -f Cargo.toml ]; then
+            cargo fmt --check
+            cargo test
+          else
+            if [ ! -f article.txt ]; then
+              echo "Expected article.txt for this plain-text repository."
+              exit 1
+            fi
+
+            line_count="$(awk 'END { print NR + 0 }' article.txt)"
+            case "$line_count" in
+              1) ;;
+              *)
+                echo "article.txt must contain exactly one line; found $line_count."
+                exit 1
+                ;;
+            esac
+
+            if ! grep -Eq '[^[:space:]]' article.txt; then
+              echo "article.txt must not be empty."
+              exit 1
+            fi
+
+            if ! grep -Eiq 'Thailand' article.txt; then
+              echo "article.txt must contain one line about Thailand."
+              exit 1
+            fi
+          fi
