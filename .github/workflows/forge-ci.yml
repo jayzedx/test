@@ -25,5 +25,14 @@ jobs:
             cargo fmt --check
             cargo test
           else
-            echo "No package.json or Cargo.toml found. Add project-specific checks to .github/workflows/forge-ci.yml."
+            # Keep repository-wide checks topic-agnostic; task-specific content is verified by the task workflow.
+            if [ ! -f article.txt ]; then
+              echo "Expected article.txt for this plain-text repository."
+              exit 1
+            fi
+
+            if ! grep -Eq '[^[:space:]]' article.txt; then
+              echo "article.txt must contain non-whitespace content."
+              exit 1
+            fi
           fi
