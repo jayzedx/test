@@ -1,2 +1,2 @@
-Bitcoin is a decentralized digital currency that records transactions on a public blockchain without relying on a central bank.
-Its fixed supply and peer-to-peer design have made it a widely discussed experiment in digital money and financial technology.
+Bitcoin uses a decentralized blockchain to record and verify transactions without relying on a central bank.
+Its limited supply and peer-to-peer network have made it a prominent example of digital money and blockchain technology.
